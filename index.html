@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>⚡ HYPER NEON QR Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #0d0d0d, #1a0033);
+      color: #00ffee;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+    header {
+      text-align: center;
+      padding: 60px 20px 30px;
+      font-size: 3em;
+      color: #fff;
+      background: linear-gradient(90deg, #00ffee, #ff00ff, #00ffee);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: glow 4s infinite alternate;
+    }
+    @keyframes glow {
+      0% { text-shadow: 0 0 10px #00ffee, 0 0 20px #ff00ff; }
+      50% { text-shadow: 0 0 40px #ff00ff, 0 0 60px #00ffee; }
+      100% { text-shadow: 0 0 20px #00ffee, 0 0 40px #ff00ff; }
+    }
+
+    
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+      100% { text-shadow: 0 0 30px #ff00ff, 0 0 60px #00ffee; }
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 40px 20px;
+    }
+    .panel {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid #00ffee;
+      border-radius: 16px;
+      padding: 30px;
+      margin: 20px auto;
+      width: 95%;
+      max-width: 550px;
+      box-shadow: 0 0 25px #00ffee, inset 0 0 40px #ff00ff44;
+      backdrop-filter: blur(12px);
+      transition: all 0.4s ease-in-out;
+    }
+    .panel:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 35px #00ffee, inset 0 0 60px #ff00ff88;
+    }
+    .panel h2 {
+      text-align: center;
+      color: #ff00ff;
+      margin-bottom: 15px;
+      font-size: 1.6em;
+      text-shadow: 0 0 12px #ff00ff;
+    }
+    input, button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 14px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #00ffee;
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+    }
+    input::placeholder {
+      color: #66ffff;
+    }
+    button {
+      background: linear-gradient(90deg, #00ffee, #ff00ff);
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #00ffee, 0 0 30px #ff00ff;
+    }
+    #qrcode {
+      margin-top: 20px;
+      background: #fff;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 0 25px #00ffee, 0 0 35px #ff00ff;
+      display: flex;
+      justify-content: center;
+    }
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 0.9rem;
+      color: #88ffff;
+      text-shadow: 0 0 10px #00ffee;
+    }
+  </style>
+</head>
+<body>
+  <header>⚡ HYPER NEON QR Generator</header>
+  <main>
+    <div class="panel">
+      <h2>Text to QR</h2>
+      <input type="text" id="textInput" placeholder="Enter glowing text...">
+      <button type="button" onclick="generateQR('text')">Generate QR</button>
+    </div>
+
+    <div class="panel">
+      <h2>URL to QR</h2>
+      <input type="text" id="urlInput" placeholder="Enter bright link...">
+      <button type="button" onclick="generateQR('url')">Generate QR</button>
+    </div>
+
+    <div class="panel">
+      <h2>Your QR Code</h2>
+      <div id="qrcode"></div>
+      <button type="button" onclick="downloadQR()">Download QR</button>
+    </div>
+  </main>
+  <footer>🚀 Designed in Cyberspace • © 2025 FutureLab</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js">
+    // 🚀 Detect if page was opened from QR code scan
+    
+  </script>
+  <script>
+    function generateQR(type) {
+      let text = "";
+      if (type === "text") {
+        text = document.getElementById("textInput").value.trim();
+      } else {
+        text = document.getElementById("urlInput").value.trim();
+        if (text && !text.startsWith("http")) {
+          text = "https://" + text;
+        }
+      }
+
+      const qrContainer = document.getElementById("qrcode");
+      qrContainer.innerHTML = "";
+
+      if (text) {
+        new QRCode(qrContainer, {
+          text: text,
+          width: 240,
+          height: 240,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+
+        setTimeout(() => {
+          document.querySelector('#qrcode').parentElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+    }
+
+    function downloadQR() {
+      const img = document.querySelector("#qrcode img");
+      if (img) {
+        const a = document.createElement("a");
+        a.href = img.src;
+        a.download = "neon_qr.png";
+        a.click();
+      }
+    }
+
+    document.getElementById("textInput").addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        generateQR("text");
+      }
+    });
+
+    document.getElementById("urlInput").addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        generateQR("url");
+      }
+    });
+  </script>
+</body>
+</html>
