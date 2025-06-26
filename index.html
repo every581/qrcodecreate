@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>QR Code Generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #e0f0ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px 20px;
+      margin: 0;
+    }
+    h1 {
+      color: #004080;
+      margin-bottom: 30px;
+      font-size: 36px;
+      text-align: center;
+    }
+    .card-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 1000px;
+    }
+    .card {
+      background: #007BFF;
+      color: white;
+      border-radius: 16px;
+      padding: 20px;
+      width: 280px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.3);
+    }
+    .card h2 {
+      margin: 0 0 10px 0;
+      font-size: 20px;
+      color: #e0f0ff;
+      text-align: center;
+    }
+    .card input {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .card button {
+      margin-top: 12px;
+      padding: 10px;
+      width: 100%;
+      background: white;
+      color: #007BFF;
+      border: none;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .card button:hover {
+      background: #e6e6e6;
+    }
+    #qrcode {
+      margin-top: 40px;
+      background: white;
+      padding: 15px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Blue QR Code Generator</h1>
+
+  <div class="card-container">
+    <div class="card">
+      <h2>Text QR</h2>
+      <input type="text" id="textInput" placeholder="Enter any text">
+      <button onclick="generateQR('text')">Generate</button>
+    </div>
+
+    <div class="card">
+      <h2>Link QR</h2>
+      <input type="text" id="linkInput" placeholder="Enter link e.g. https://...">
+      <button onclick="generateQR('link')">Generate</button>
+    </div>
+
+    <div class="card">
+      <h2>WiFi QR</h2>
+      <input type="text" id="ssidInput" placeholder="WiFi SSID">
+      <input type="text" id="passInput" placeholder="WiFi Password">
+      <button onclick="generateQR('wifi')">Generate</button>
+    </div>
+  </div>
+
+  <div id="qrcode"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <script>
+    function generateQR(type) {
+      let data = "";
+      if (type === "text") {
+        const val = document.getElementById("textInput").value.trim();
+        data = val;
+      } else if (type === "link") {
+        let val = document.getElementById("linkInput").value.trim();
+        if (!val.startsWith("http")) val = "https://" + val;
+        data = val;
+      } else if (type === "wifi") {
+        const ssid = document.getElementById("ssidInput").value.trim();
+        const pass = document.getElementById("passInput").value.trim();
+        data = `WIFI:S:${ssid};T:WPA;P:${pass};;`;
+      }
+
+      document.getElementById("qrcode").innerHTML = "";
+      new QRCode(document.getElementById("qrcode"), {
+        text: data,
+        width: 250,
+        height: 250,
+        colorDark : "#000",
+        colorLight : "#fff",
+        correctLevel : QRCode.CorrectLevel.H
+      });
+    }
+  </script>
+
+</body>
+</html>
