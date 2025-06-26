@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stylish QR Generator</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #c9d6ff, #e2e2e2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 20px;
+    }
+    h1 {
+      font-size: 2.8em;
+      color: #003366;
+      margin-bottom: 30px;
+      backdrop-filter: blur(4px);
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      border-radius: 24px;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 320px;
+      backdrop-filter: blur(10px);
+      transition: 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+    }
+    input, button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      background: #007BFF;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    #qrcode {
+      margin: 30px 0;
+      padding: 12px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .colors {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      justify-content: space-between;
+      width: 100%;
+    }
+    label {
+      font-size: 14px;
+      color: #003366;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Stylish QR Code Generator</h1>
+  <div class="card">
+    <input type="text" id="text" placeholder="Enter text or URL">
+    <div class="colors">
+      <label>Dark: <input type="color" id="darkColor" value="#000000"></label>
+      <label>Light: <input type="color" id="lightColor" value="#ffffff"></label>
+    </div>
+    <button onclick="downloadQR()">Download PNG</button>
+    <div id="qrcode"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <script>
+    let qr;
+    const textInput = document.getElementById("text");
+    const qrcodeContainer = document.getElementById("qrcode");
+
+    function generate() {
+      const text = textInput.value.trim();
+      const dark = document.getElementById("darkColor").value;
+      const light = document.getElementById("lightColor").value;
+
+      qrcodeContainer.innerHTML = "";
+      if (text) {
+        qr = new QRCode(qrcodeContainer, {
+          text: text,
+          width: 220,
+          height: 220,
+          colorDark: dark,
+          colorLight: light,
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      }
+    }
+
+    function downloadQR() {
+      const img = qrcodeContainer.querySelector("img");
+      if (img) {
+        const a = document.createElement("a");
+        a.href = img.src;
+        a.download = "qrcode.png";
+        a.click();
+      }
+    }
+
+    textInput.addEventListener("input", generate);
+    document.getElementById("darkColor").addEventListener("input", generate);
+    document.getElementById("lightColor").addEventListener("input", generate);
+  </script>
+</body>
+</html>
