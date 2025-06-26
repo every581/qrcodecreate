@@ -2,142 +2,127 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>QR Code Generator</title>
+  <title>Stylish QR Generator</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
     body {
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #e0f0ff;
+      background: linear-gradient(135deg, #c9d6ff, #e2e2e2);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 50px 20px;
-      margin: 0;
+      padding: 60px 20px;
     }
     h1 {
-      color: #004080;
+      font-size: 2.8em;
+      color: #003366;
       margin-bottom: 30px;
-      font-size: 36px;
-      text-align: center;
-    }
-    .card-container {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-      max-width: 1000px;
+      backdrop-filter: blur(4px);
     }
     .card {
-      background: #007BFF;
-      color: white;
-      border-radius: 16px;
-      padding: 20px;
-      width: 280px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      cursor: pointer;
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      border-radius: 24px;
+      padding: 30px;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      width: 320px;
+      backdrop-filter: blur(10px);
+      transition: 0.3s ease;
     }
     .card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.3);
+      transform: translateY(-8px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
     }
-    .card h2 {
-      margin: 0 0 10px 0;
-      font-size: 20px;
-      color: #e0f0ff;
-      text-align: center;
-    }
-    .card input {
+    input, button {
+      margin-top: 15px;
       width: 100%;
-      margin-top: 10px;
-      padding: 10px;
+      padding: 12px;
+      border-radius: 10px;
       border: none;
-      border-radius: 8px;
-      font-size: 14px;
+      font-size: 16px;
     }
-    .card button {
-      margin-top: 12px;
-      padding: 10px;
-      width: 100%;
-      background: white;
-      color: #007BFF;
-      border: none;
+    button {
+      background: #007BFF;
+      color: white;
       font-weight: bold;
-      border-radius: 8px;
       cursor: pointer;
-      transition: background 0.2s ease;
+      transition: 0.2s;
     }
-    .card button:hover {
-      background: #e6e6e6;
+    button:hover {
+      background: #0056b3;
     }
     #qrcode {
-      margin-top: 40px;
+      margin: 30px 0;
+      padding: 12px;
       background: white;
-      padding: 15px;
       border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .colors {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      justify-content: space-between;
+      width: 100%;
+    }
+    label {
+      font-size: 14px;
+      color: #003366;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-
-  <h1>Blue QR Code Generator</h1>
-
-  <div class="card-container">
-    <div class="card">
-      <h2>Text QR</h2>
-      <input type="text" id="textInput" placeholder="Enter any text">
-      <button onclick="generateQR('text')">Generate</button>
+  <h1>Stylish QR Code Generator</h1>
+  <div class="card">
+    <input type="text" id="text" placeholder="Enter text or URL">
+    <div class="colors">
+      <label>Dark: <input type="color" id="darkColor" value="#000000"></label>
+      <label>Light: <input type="color" id="lightColor" value="#ffffff"></label>
     </div>
-
-    <div class="card">
-      <h2>Link QR</h2>
-      <input type="text" id="linkInput" placeholder="Enter link e.g. https://...">
-      <button onclick="generateQR('link')">Generate</button>
-    </div>
-
-    <div class="card">
-      <h2>WiFi QR</h2>
-      <input type="text" id="ssidInput" placeholder="WiFi SSID">
-      <input type="text" id="passInput" placeholder="WiFi Password">
-      <button onclick="generateQR('wifi')">Generate</button>
-    </div>
+    <button onclick="downloadQR()">Download PNG</button>
+    <div id="qrcode"></div>
   </div>
-
-  <div id="qrcode"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
   <script>
-    function generateQR(type) {
-      let data = "";
-      if (type === "text") {
-        const val = document.getElementById("textInput").value.trim();
-        data = val;
-      } else if (type === "link") {
-        let val = document.getElementById("linkInput").value.trim();
-        if (!val.startsWith("http")) val = "https://" + val;
-        data = val;
-      } else if (type === "wifi") {
-        const ssid = document.getElementById("ssidInput").value.trim();
-        const pass = document.getElementById("passInput").value.trim();
-        data = `WIFI:S:${ssid};T:WPA;P:${pass};;`;
+    let qr;
+    const textInput = document.getElementById("text");
+    const qrcodeContainer = document.getElementById("qrcode");
+
+    function generate() {
+      const text = textInput.value.trim();
+      const dark = document.getElementById("darkColor").value;
+      const light = document.getElementById("lightColor").value;
+
+      qrcodeContainer.innerHTML = "";
+      if (text) {
+        qr = new QRCode(qrcodeContainer, {
+          text: text,
+          width: 220,
+          height: 220,
+          colorDark: dark,
+          colorLight: light,
+          correctLevel: QRCode.CorrectLevel.H
+        });
       }
-
-      document.getElementById("qrcode").innerHTML = "";
-      new QRCode(document.getElementById("qrcode"), {
-        text: data,
-        width: 250,
-        height: 250,
-        colorDark : "#000",
-        colorLight : "#fff",
-        correctLevel : QRCode.CorrectLevel.H
-      });
     }
-  </script>
 
+    function downloadQR() {
+      const img = qrcodeContainer.querySelector("img");
+      if (img) {
+        const a = document.createElement("a");
+        a.href = img.src;
+        a.download = "qrcode.png";
+        a.click();
+      }
+    }
+
+    textInput.addEventListener("input", generate);
+    document.getElementById("darkColor").addEventListener("input", generate);
+    document.getElementById("lightColor").addEventListener("input", generate);
+  </script>
 </body>
 </html>
